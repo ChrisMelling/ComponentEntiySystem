@@ -1,328 +1,95 @@
-#include "SFML\System.hpp"
-#include "SFML\Audio.hpp"
-#include "SFML\Graphics.hpp"
-
+//STD
 #include <iostream>
-#include <stdio.h>
+#include <ctime>
+#include <cmath>
+#include <cstdlib>
 
-#include <conio.h>
-#include <windows.h>
+//3RD
+#include <SFML/Graphics.hpp>
 
-using namespace std;
-#include <list>
-#include <map>
+//SELF
+#include "Constants.hpp"
 
-#include "SceneManager.h"
-#include "Object.h"
-#include "BaseMessage.h"
-#include "BaseComponent.h"
+#include "ResourceManager.hpp"
 
-class Draw : public BaseMessage
-{
-public: // Abstract class, constructor is protected
-	Draw(int destinationObjectID)
-		: BaseMessage(destinationObjectID, DrawMessage)
-	{
+#include "EntityManager.hpp"
+#include "Entity.hpp"
 
-	}
-};
+#include "Systems/RenderSystem.hpp"
+#include "Systems/CameraSystem.hpp"
+#include "Systems/MovementSystem.hpp"
+#include "Systems/ControlSystem.hpp"
+#include "Systems/CollisionSystem.hpp"
 
-class Update : public BaseMessage
-{
-public: // Abstract class, constructor is protected
-	Update(int destinationObjectID)
-		: BaseMessage(destinationObjectID, updateMessage)
-	{
+#include "Components/Component.hpp"
+#include "Components/Health.hpp"
+#include "Components/Movement.hpp"
+#include "Components/Display.hpp"
+#include "Components/Flags.hpp"
 
-	}
-};
+#include "Factories/PlayerFactory.hpp"
 
-class PositionMessage : public BaseMessage
-{
-protected: // Abstract class, constructor is protected
-	PositionMessage(int destinationObjectID, eMessageType messageTypeID, 
-		sf::Vector2f pos)
-		: BaseMessage(destinationObjectID, messageTypeID)
-		, pos(pos)
-	{
+EntityManager EntMan;
+ResourceManager ResMan;
 
-	}
+RenderSystem RenderSys;
+CameraSystem CameraSys;
+MovementSystem MoveSys;
+ControlSystem ControlSys;
+CollisionSystem ColSys;
 
-public:
-	sf::Vector2f pos;
-};
-
-class RotationMessage : public BaseMessage
-{
-public: // Abstract class, constructor is protected
-	RotationMessage(int destinationObjectID, float rotation)
-		: BaseMessage(destinationObjectID, rotationMessage)
-		, _rotation(rotation)
-	{
-
-	}
-
-public:
-	float _rotation;
-};
-
-class MsgSetPosition : public PositionMessage
-{
-public:
-	MsgSetPosition(int destinationObjectID, sf::Vector2f pos)
-		: PositionMessage(destinationObjectID, SetPosition, pos)
-	{}
-};
-
-class MsgGetPosition : public BaseMessage
-{
-public:
-	MsgGetPosition(int destinationObjectID)
-		: BaseMessage(destinationObjectID, GetPosition)
-	{}
-
-	sf::Vector2f pos;
-};
-
-
-class PlayerInputComponent : public BaseComponent
-{
-public:
-
-	PlayerInputComponent(sf::RenderWindow* renderWindow,SceneManager *manager)
-		: BaseComponent()
-	{
-		_window = renderWindow;
-		_manager = manager;
-	}
-
-		bool SendMessage(BaseMessage* msg)
-		{
-			// Object has a switch for any messages it cares about
-			switch(msg->m_messageTypeID)
-			{
-
-			case updateMessage:
-				{               
-					sf::Vector2f direction;
-
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){direction.x -= 0.2f;}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){direction.x += 0.2f;}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)){direction.y -= 0.2f;}
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){direction.y += 0.2f;}
-
-					MsgSetPosition msgSetPos(_owner->GetObjectID(), direction);
-					_manager->SendMessage(&msgSetPos);
-				}
-				break;
-			}
-
-			return true;
-		}
-
-	sf::RenderWindow *_window;
-	SceneManager *_manager;
-};
-
-class WanderAIComponent : public BaseComponent
-{
-public:
-
-	WanderAIComponent(sf::RenderWindow* renderWindow,SceneManager *manager)
-		: BaseComponent()
-	{
-		_window = renderWindow;
-		_manager = manager;
-
-		float r1 = -1 + (float)rand()/((float)RAND_MAX/(-1-1));
-		 
-		float r2 = -1 + (float)rand()/((float)RAND_MAX/(-1-1));
-
-
-		float radians = atan2(r1,r2);
-		degrees = (radians/3.14159265) * 180;
-		               
-		double radian = degrees * (3.14159265 / 180);
-
-		direction = sf::Vector2f((float)cos(radian), (float)sin(radian));
-	}
-
-		bool SendMessage(BaseMessage* msg)
-		{
-			// Object has a switch for any messages it cares about
-			switch(msg->m_messageTypeID)
-			{
-
-			case updateMessage:
-				{              
-					// Get 'myObj' position to verify it was set properly
-					MsgGetPosition msgGetPos(_owner->GetObjectID());
-					_manager->SendMessage(&msgGetPos);
-
-					if(msgGetPos.pos.x > 600) {direction.x *= -1;}
-					if(msgGetPos.pos.y > 600) {direction.y *= -1;}
-					if(msgGetPos.pos.y < 0) { direction.y *= -1;}
-					if(msgGetPos.pos.x < 0) { direction.x *= -1;}
-
-					MsgSetPosition msgSetPos(_owner->GetObjectID(), direction);
-					_manager->SendMessage(&msgSetPos);
-
-					RotationMessage msgRot(_owner->GetObjectID(), (float)degrees);
-					_manager->SendMessage(&msgRot);
-				}
-				break;
-			}
-
-			return true;
-		}
-
-	sf::RenderWindow *_window;
-	SceneManager *_manager;
-	sf::Vector2f direction;
-	double degrees;
-};
-
-
-
-class RenderComponent : public BaseComponent
-{
-public:
-
-	RenderComponent(sf::RenderWindow* renderWindow, sf::Vector2f startingPos)
-		: BaseComponent()
-	{
-		window = renderWindow;
-		_sprite.setPosition(startingPos);
-	}
-
-	void loadTexture(std::string filename)
-	{
-		if(_texture.loadFromFile(filename) == false)
-		{
-
-		}
-		else
-		{
-			_sprite.setTexture(_texture);
-		}
-	}
-
-
-	bool SendMessage(BaseMessage* msg)
-	{
-		// Object has a switch for any messages it cares about
-		switch(msg->m_messageTypeID)
-		{
-
-		case SetPosition:
-			{               
-				MsgSetPosition* msgSetPos = static_cast<MsgSetPosition*>(msg);
-				_sprite.move(msgSetPos->pos);
-			}
-			break;
-		case GetPosition:
-			{
-				MsgGetPosition* msgSetPos = static_cast<MsgGetPosition*>(msg);
-
-				msgSetPos->pos = _sprite.getPosition();
-			}
-			break;
-
-		case DrawMessage:
-			{                   
-				window->draw(_sprite);
-			}
-			break;
-
-		default:
-			return BaseComponent::SendMessage(msg);
-		}
-
-		return true;
-	}
-
-	sf::RenderWindow *window;
-	sf::Sprite _sprite;
-	sf::Texture _texture;
-};
-
-
-
-
-
+PlayerFactory PlayerFact;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(600, 600), "SFML works!");
+    std::srand(std::time(0));
 
-	// Create a scene manager/entity manager
-	SceneManager *sceneMgr = new SceneManager();
+    sf::RenderWindow window(sf::VideoMode(constant::windowWidth, constant::windowHeight), "Entity Component System");
 
-	// Create an object for the player
-	Object* myObj = sceneMgr->CreateObject(window);
+    RenderSys.debug = true;
 
-	// Create an object for the NPC
-	Object* myNPC = sceneMgr->CreateObject(window);
+    PlayerFact.createPlayer(sf::Vector2f(constant::windowWidth / 2 - 24, constant::windowHeight / 2 - 48));
 
-	// Player needs input, create the input component
-	PlayerInputComponent* inputComp = new PlayerInputComponent(&window, sceneMgr);
-	
-	// Player needs to be rendered to the screen, create render component
-	RenderComponent* renderComp = new RenderComponent(&window,sf::Vector2f(100,100));
+    CameraSys.followEntity(PlayerFact.playerID);
 
-	// Give the NPC some A.I, create A.I component
-	WanderAIComponent* inputComp2 = new WanderAIComponent(&window, sceneMgr);
+    // Records amount of time it took to process one game loop(frame)
+    sf::Clock prevFrameTime;
 
-	// NPC also needs to be rendered to the screen, create render component
-	RenderComponent* renderComp2 = new RenderComponent(&window,sf::Vector2f(200,200));
+    // Used to calculate the amount of time it took for each function in main to complete
+    sf::Clock funcCompTime;
 
-	// Set the renderComponents texture
-	renderComp->loadTexture("Content/ball.png");
-
-	// Attach render component to the object we made
-	myObj->AddComponent(renderComp);
-
-	// Attach input component to the object we made
-	myObj->AddComponent(inputComp);
-
-	// Set the renderComponents texture
-	renderComp2->loadTexture("Content/ball.png");
-
-	// Attach render component to the object we made
-	myNPC->AddComponent(renderComp2);
-
-	// Attach input component to the object we made
-	myNPC->AddComponent(inputComp2);
-
+    // Stores the amount of seconds it took to process the previous game loop
+    double dt = 0;
 
     while (window.isOpen())
     {
+        //accurate seconds
+        dt = prevFrameTime.restart().asMicroseconds() / 1000000.f;
+
+        funcCompTime.restart();
         sf::Event event;
+
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
-        window.clear();
+        ControlSys.run(dt);
 
-		for (int i = 0; i < 2; i++) {
+        MoveSys.run(dt);
 
-			// Create a message telling the entity i to update
-			Update msgUpdate(i);
+        ColSys.run(dt);
 
-			// Send the message to the manager
-			sceneMgr->SendMessage(&msgUpdate);
-        
-			// Create a message telling the entity i to draw
-			Draw msgDraw(i);
+        window.clear(sf::Color(40, 40, 40));
 
-			// Send the message to the manager
-			sceneMgr->SendMessage(&msgDraw);
+        CameraSys.run(window);
 
-		}
+        RenderSys.run(window);
 
         window.display();
+
+        std::cout << std::floor(1.f / dt) << " FPS\n\n";
     }
 
     return 0;

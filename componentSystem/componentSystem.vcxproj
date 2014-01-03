@@ -51,12 +51,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>C:\SFML-2.0-rc\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SFML-2.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SFML-2.0-rc\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\SFML-2.1\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-main.lib;sfml-system-s.lib;sfml-window-s.lib;sfml-graphics-s.lib;sfml-network-s.lib;sfml-audio-s.lib;%(AdditionalDependencies)kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -68,16 +68,16 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\SFML-2.0-rc\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Chris\Documents\GitHub\ComponentEntiySystem\componentSystem;C:\Users\Chris\Documents\GitHub\ComponentEntiySystem\componentSystem\include;C:\SFML-2.1windows2010\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\SFML-2.0-rc\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-main.lib;sfml-system-s.lib;sfml-window-s.lib;sfml-graphics-s.lib;sfml-network-s.lib;sfml-audio-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\SFML-2.1windows2010\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-main.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;sfml-network.lib;sfml-audio-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -88,18 +88,44 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BaseComponent.cpp" />
-    <ClCompile Include="BaseMessage.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
+    <ClInclude Include="BaseSystem.h" />
+    <ClInclude Include="ComponentFilter.h" />
+    <ClInclude Include="include\Components\Component.hpp" />
+    <ClInclude Include="include\Components\Display.hpp" />
+    <ClInclude Include="include\Components\Flags.hpp" />
+    <ClInclude Include="include\Components\Health.hpp" />
+    <ClInclude Include="include\Components\Movement.hpp" />
+    <ClInclude Include="include\Constants.hpp" />
+    <ClInclude Include="include\Entity.hpp" />
+    <ClInclude Include="include\EntityManager.hpp" />
+    <ClInclude Include="include\Factories\PlayerFactory.hpp" />
+    <ClInclude Include="include\ResourceManager.hpp" />
+    <ClInclude Include="include\Systems\CameraSystem.hpp" />
+    <ClInclude Include="include\Systems\CollisionSystem.hpp" />
+    <ClInclude Include="include\Systems\ControlSystem.hpp" />
+    <ClInclude Include="include\Systems\MovementSystem.hpp" />
+    <ClInclude Include="include\Systems\RenderSystem.hpp" />
+    <ClInclude Include="include\Utility\Vector.hpp" />
+    <ClInclude Include="include\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseComponent.h" />
-    <ClInclude Include="BaseMessage.h" />
-    <ClInclude Include="forward.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="SceneManager.h" />
+    <ClCompile Include="BaseSystem.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="src\Components\Component.cpp" />
+    <ClCompile Include="src\Components\Display.cpp" />
+    <ClCompile Include="src\Components\Flags.cpp" />
+    <ClCompile Include="src\Components\Health.cpp" />
+    <ClCompile Include="src\Components\Movement.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\Factories\PlayerFactory.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
+    <ClCompile Include="src\Systems\CameraSystem.cpp" />
+    <ClCompile Include="src\Systems\CollisionSystem.cpp" />
+    <ClCompile Include="src\Systems\ControlSystem.cpp" />
+    <ClCompile Include="src\Systems\MovementSystem.cpp" />
+    <ClCompile Include="src\Systems\RenderSystem.cpp" />
+    <ClCompile Include="src\Utility\Vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
