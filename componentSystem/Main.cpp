@@ -7,50 +7,10 @@
 //3RD
 #include <SFML/Graphics.hpp>
 
-//SELF
-#include "Constants.hpp"
-
-#include "ResourceManager.hpp"
-
-#include "EntityManager.hpp"
-#include "Entity.hpp"
-
-#include "Systems/RenderSystem.hpp"
-#include "Systems/CameraSystem.hpp"
-#include "Systems/MovementSystem.hpp"
-#include "Systems/ControlSystem.hpp"
-#include "Systems/CollisionSystem.hpp"
-
-#include "Components/Component.hpp"
-#include "Components/Health.hpp"
-#include "Components/Movement.hpp"
-#include "Components/Display.hpp"
-#include "Components/Flags.hpp"
-
-#include "Factories/PlayerFactory.hpp"
-
-EntityManager EntMan;
-ResourceManager ResMan;
-
-RenderSystem RenderSys;
-CameraSystem CameraSys;
-MovementSystem MoveSys;
-ControlSystem ControlSys;
-CollisionSystem ColSys;
-
-PlayerFactory PlayerFact;
 
 int main()
 {
-    std::srand(std::time(0));
-
-    sf::RenderWindow window(sf::VideoMode(constant::windowWidth, constant::windowHeight), "Entity Component System");
-
-    RenderSys.debug = true;
-
-    PlayerFact.createPlayer(sf::Vector2f(constant::windowWidth / 2 - 24, constant::windowHeight / 2 - 48));
-
-    CameraSys.followEntity(PlayerFact.playerID);
+    sf::RenderWindow window(sf::VideoMode(600, 400), "Entity Component System");
 
     // Records amount of time it took to process one game loop(frame)
     sf::Clock prevFrameTime;
@@ -75,17 +35,8 @@ int main()
                 window.close();
         }
 
-        ControlSys.run(dt);
-
-        MoveSys.run(dt);
-
-        ColSys.run(dt);
 
         window.clear(sf::Color(40, 40, 40));
-
-        CameraSys.run(window);
-
-        RenderSys.run(window);
 
         window.display();
 
